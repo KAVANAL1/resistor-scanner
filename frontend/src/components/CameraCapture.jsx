@@ -7,7 +7,8 @@ import Webcam from "react-webcam";
    onResult(resultObject, previewUrl)  --> called when backend returns prediction
 */
 
-const BACKEND_URL = "https://resistor-scanner-backend-n4g5.onrender.com";
+const BACKEND_URL = "https://resistor-scanner-backend-n4g5.onrender.com/api/scan/file";
+
 
 export default function CameraCapture({ onResult }) {
   const [preview, setPreview] = useState(null);
