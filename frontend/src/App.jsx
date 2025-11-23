@@ -33,15 +33,15 @@ function App() {
       // ✔ Correct backend URL with fallback
      const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-      if (!backendURL) {
-        console.error("❌ VITE_BACKEND_URL is missing!");
-        alert("Backend URL not configured");
-        return;
-      }
+if (!backendURL) {
+  alert("Backend URL missing!");
+  return;
+}
 
-      const res = await axios.post(`${backendURL}/api/scan/file`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+const res = await axios.post(`${backendURL}/api/scan/file`, formData, {
+  headers: { "Content-Type": "multipart/form-data" },
+});
+
 
       setResult(res.data);
     } catch (err) {

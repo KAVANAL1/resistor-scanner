@@ -1,4 +1,5 @@
-const BACKEND_URL = "https://resistor-scanner-backend-n4g5.onrender.com";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 async function sendToBackend(file, previewUrl) {
   setIsLoading(true);
