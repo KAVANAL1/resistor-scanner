@@ -1,31 +1,30 @@
-# Base image with Node + Python
+# backend/Dockerfile
 FROM python:3.10-slim
 
-# Install Node
-RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean
+# Install Node.js and libraries needed by OpenCV
+RUN apt-get update && apt-get install -y curl build-essential \
+  libglib2.0-0 libsm6 libxext6 libxrender1 && \
+  curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt-get install -y nodejs && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install OpenCV dependencies
-RUN apt-get update && apt-get install -y \
-    libglib2.0-0 libsm6 libxext6 libxrender1 && \
-    apt-get clean
+# Create app dir and set working directory to backend
+WORKDIR /app/backend
 
-# Set working directory
-WORKDIR /app
+# Copy package.json first for faster npm install
+COPY backend/package*.json ./
 
-# Copy backend files
-COPY . .
+# Install node deps (production)
+RUN npm install --production
 
-# Install Python packages
+# Copy rest of backend files
+COPY backend/ ./
+
+# Install python deps (from backend/requirements.txt)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Node packages
-RUN npm install
-
-# Expose port
+# Expose the port your server expects
 EXPOSE 3000
 
-# Start Node server
+# Run your node server (server.js uses process.env.PORT)
 CMD ["node", "server.js"]
