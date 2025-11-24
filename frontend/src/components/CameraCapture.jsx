@@ -18,21 +18,25 @@ function CameraCapture({ onResult, onImagePreview }) {
 
     setProcessing(true);
 
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/scan/file`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-      onResult(data);
-    } catch (err) {
-      console.error(err);
-      alert("Error processing image.");
+   try {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/scan/file`,
+    {
+      method: "POST",
+      body: formData,
     }
+  );
+
+  const data = await res.json();
+
+  console.log("API response:", data); // 👈 ADD THIS LOG
+
+  onResult(data);
+} catch (err) {
+  console.error("Frontend error:", err);  // 👈 ADD LOG
+  alert("Error processing image.");
+}
+
 
     setProcessing(false);
   };
