@@ -1,32 +1,34 @@
 // frontend/src/components/CameraCapture.jsx
 import React, { useState } from "react";
-import axios from "axios";
 
 function CameraCapture({ onResult, onImagePreview }) {
   const [processing, setProcessing] = useState(false);
-
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    `${window.location.protocol}//${window.location.hostname}:5000`;
 
   const handleGallery = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Show preview
     const previewURL = URL.createObjectURL(file);
-    onImagePreview(previewURL); // show image BEFORE processing
+    onImagePreview(previewURL);
 
+    // Prepare form data
     const formData = new FormData();
     formData.append("image", file);
 
     setProcessing(true);
 
     try {
-      const res = await axios.post(`${API_URL}/api/scan/file`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        timeout: 30000,
-      });
-      onResult(res.data);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/scan/file`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      onResult(data);
     } catch (err) {
       console.error(err);
       alert("Error processing image.");
@@ -37,7 +39,6 @@ function CameraCapture({ onResult, onImagePreview }) {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {/* ONLY GALLERY INPUT */}
       <input
         type="file"
         id="galleryInput"
