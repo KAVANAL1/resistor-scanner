@@ -11,23 +11,25 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
-# Set working directory
 WORKDIR /app
 
-# Copy python dependencies first
+# Copy Python requirements first
 COPY requirements.txt /app/
 
-# Install Python packages (including tflite-runtime)
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy full backend code
+# Copy ALL backend code
 COPY . /app/
+
+# ⭐ VERY VERY IMPORTANT — Copy model folder explicitly
+COPY model /app/model
 
 # Install Node dependencies
 RUN npm install --production
 
-# Expose correct port
+# Expose backend port
 EXPOSE 5000
 
-# Start Node backend
+# Start Node server
 CMD ["node", "server.js"]
