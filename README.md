@@ -1,24 +1,28 @@
 # 🔍 Resistor Scanner
 
-An AI-powered web application that automatically detects resistor color bands from an uploaded image and predicts the resistor's **resistance value and tolerance**.
+An AI-powered web application that automatically detects resistor color bands from an uploaded image and predicts the resistor's **resistance value and tolerance** using deep learning.
 
-## 🚀 Live Demo
+🌐 **Live Demo:** [Resistor Scanner](https://resistor-scanner-b4uv.onrender.com)
 
-👉 **[Try Resistor Scanner](https://resistor-scanner.vercel.app/)**
+---
 
 ## ✨ Features
 
 * 📷 Upload a resistor image from the gallery
 * 🎨 Detect resistor color bands using deep learning
-* 🔢 Predict resistor resistance value
-* 📊 Predict tolerance
-* ⚡ Fast image processing through a web interface
-* 🌐 Full-stack application with React frontend and Node.js backend
-* 🤖 TensorFlow/TFLite-based model inference
+* 🔢 Calculate the resistor's resistance value
+* 📊 Predict resistor tolerance
+* 🤖 DenseNet121-based multi-head classification model
+* ⚡ TensorFlow Lite inference for deployment
+* 🌐 Full-stack web application
+* 📱 Works on both desktop and mobile browsers
+* ☁️ Deployed application with a live backend API
+
+---
 
 ## 🧠 How It Works
 
-The application follows this workflow:
+The application processes a resistor image through the following pipeline:
 
 ```text
 Resistor Image
@@ -29,14 +33,18 @@ Image Upload
       ↓
 Node.js / Express Backend
       ↓
-ML Model Inference
+Python Inference Pipeline
       ↓
-Color Band Detection
+TensorFlow Lite Model
+      ↓
+Color Band Prediction
       ↓
 Resistance & Tolerance Calculation
       ↓
 Result Display
 ```
+
+---
 
 ## 🏗️ Project Architecture
 
@@ -72,6 +80,8 @@ resistor-scanner/
 └── README.md
 ```
 
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -80,7 +90,8 @@ resistor-scanner/
 * Vite
 * JavaScript
 * Axios
-* HTML/CSS
+* HTML
+* CSS
 
 ### Backend
 
@@ -91,15 +102,18 @@ resistor-scanner/
 
 ### Machine Learning
 
+* Python
 * TensorFlow
 * TensorFlow Lite
+* Keras
+* DenseNet121
 * Deep Learning
 * Image Classification
 
 ### Deployment
 
-* Vercel – Frontend
-* Render – Backend
+* Render
+* Docker
 
 ### Version Control
 
@@ -107,23 +121,72 @@ resistor-scanner/
 * GitHub
 * Git LFS
 
+---
+
 ## 🤖 Machine Learning Model
 
-The application uses a deep-learning model trained to identify resistor color bands from images.
+The application uses a **DenseNet121-based deep learning model** to classify the color bands of a resistor.
 
-The model predicts the required resistor characteristics, which are then used to determine the corresponding resistance value and tolerance.
+The model uses a multi-head architecture to predict different resistor characteristics:
 
-The trained model is converted to **TensorFlow Lite (`.tflite`)** format for deployment.
+```text
+Input Image
+     ↓
+DenseNet121 Backbone
+     ↓
+Global Average Pooling
+     ↓
+ ┌──────────┬──────────┬──────────┬────────────┬───────────┬────────────┐
+ ↓          ↓          ↓          ↓            ↓           ↓
+Band 1    Band 2     Band 3    Multiplier   Tolerance   Band Count
+```
+
+The predicted color bands are then mapped to their corresponding numerical values to calculate the resistor's resistance and tolerance.
+
+The trained model is converted to **TensorFlow Lite (`.tflite`)** format for lightweight deployment and inference.
+
+---
+
+## 📐 Resistance Calculation
+
+For a typical 4-band resistor, the color bands represent:
+
+```text
+Band 1 → First significant digit
+Band 2 → Second significant digit
+Band 3 → Multiplier
+Band 4 → Tolerance
+```
+
+For example:
+
+```text
+Orange → 3
+Orange → 3
+Brown  → ×10
+Gold   → ±5%
+```
+
+Therefore:
+
+```text
+33 × 10 = 330 Ω
+Tolerance = ±5%
+```
+
+The application performs this mapping automatically after predicting the resistor bands.
+
+---
 
 ## 📡 API
 
 ### Scan Resistor Image
 
-```http
+```text
 POST /api/scan/file
 ```
 
-The endpoint accepts an image file and processes it using the machine-learning inference pipeline.
+The endpoint accepts an image file and sends it through the machine-learning inference pipeline.
 
 ### Request
 
@@ -133,13 +196,31 @@ Content-Type: multipart/form-data
 image: <resistor image>
 ```
 
-### Response
+### Processing
 
-The backend returns the prediction result, which is displayed by the React frontend.
+```text
+Image Upload
+     ↓
+Multer
+     ↓
+Temporary Image Storage
+     ↓
+Python Inference Script
+     ↓
+TensorFlow Lite Model
+     ↓
+Prediction
+     ↓
+JSON Response
+```
+
+The prediction result is then returned to the React frontend and displayed to the user.
+
+---
 
 ## 💻 Run Locally
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/KAVANAL1/resistor-scanner.git
@@ -172,50 +253,103 @@ npm run dev
 
 The frontend will be available through the Vite development server.
 
+---
+
 ## 📸 Application
 
 ### Upload Resistor Image
 
-*Add a screenshot of the image upload interface here.*
+The user can upload a resistor image directly from the gallery.
 
 ### Prediction Result
 
-*Add a screenshot of the prediction result here.*
+The application displays:
 
-## 📊 Example Workflow
+* Detected resistor bands
+* Resistance value
+* Tolerance
+
+Example:
 
 ```text
-1. User uploads resistor image
-          ↓
-2. Frontend sends image to backend
-          ↓
-3. Backend processes the image
-          ↓
-4. ML model predicts resistor bands
-          ↓
-5. Resistance and tolerance are calculated
-          ↓
-6. Result is returned to frontend
-          ↓
-7. Prediction is displayed to user
+Bands: Orange Orange Brown Gold
+
+Value: 330 Ω
+
+Tolerance: 5%
 ```
+
+---
+
+## 🔄 End-to-End Workflow
+
+```text
+1. User selects a resistor image
+             ↓
+2. React frontend displays the image preview
+             ↓
+3. Image is sent to the Express API
+             ↓
+4. Backend temporarily stores the uploaded image
+             ↓
+5. Python inference script is executed
+             ↓
+6. TensorFlow Lite model processes the image
+             ↓
+7. Model predicts resistor characteristics
+             ↓
+8. Color values are mapped to resistance
+             ↓
+9. Resistance and tolerance are calculated
+             ↓
+10. Backend returns the result as JSON
+             ↓
+11. React displays the prediction
+```
+
+---
+
+## 🚀 Deployment
+
+The project is deployed as a full-stack application.
+
+```text
+Frontend
+   ↓
+React Application
+   ↓
+Backend API
+   ↓
+Node.js / Express
+   ↓
+Python Inference
+   ↓
+TensorFlow Lite Model
+```
+
+The deployed application can be accessed here:
+
+🌐 **[Live Resistor Scanner](https://resistor-scanner-b4uv.onrender.com)**
+
+---
 
 ## 🔮 Future Improvements
 
 * 📷 Real-time camera-based resistor scanning
-* 🎯 Improved detection accuracy
-* 📱 Mobile-friendly interface
-* ⚡ Faster model inference
+* 🎯 Improve robustness across different lighting and backgrounds
 * 🔍 Automatic resistor localization before classification
-* 📚 Support for additional resistor types
-* ☁️ Improved cloud deployment and scalability
+* 📚 Support for additional resistor formats and band configurations
+* ⚡ Further optimize inference speed
+* 📊 Add prediction confidence visualization
+* 🧪 Expand the evaluation dataset with more real-world images
+
+---
 
 ## 👩‍💻 Author
 
 **Kavana L**
 
-Electronics & Communication Engineering
-Interested in Software Development, AI/ML and Computer Vision.
+Electronics & Communication Engineering student interested in **Software Development, Artificial Intelligence, Machine Learning, and Computer Vision**.
 
 ---
 
